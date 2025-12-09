@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - HI 면접 MASTER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body
+    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f1f5f9;">
+    <div class="card" style="width: 100%; max-width: 400px;">
+        <div class="card-body">
+            <h1 class="text-center" style="margin-bottom: 0.5rem; color: var(--primary-color);">HI 면접 MASTER</h1>
+            <p class="text-center text-muted" style="margin-bottom: 2rem;">학습을 시작하려면 로그인하세요</p>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="email">이메일 주소</label>
+                    <input type="email" id="email" class="form-input" placeholder="user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">비밀번호</label>
+                    <input type="password" id="password" class="form-input" placeholder="비밀번호 입력" required>
+                </div>
+                <div id="error-msg" class="text-center mb-4"
+                    style="color: var(--danger-color); display: none; font-size: 0.875rem;"></div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem;">로그인</button>
+            </form>
+
+            <div class="text-center mt-4" style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">데모용 계정:</small>
+                <code
+                    style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">user@test.com</code>
+                / <code
+                    style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">password</code>
+                <br>
+                <code
+                    style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">admin@test.com</code>
+                (관리자용)
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (Auth.getUser()) {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Artificial delay for realism
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = '로그인 중...';
+            btn.disabled = true;
+
+            setTimeout(async () => {
+                const result = await Auth.login(email, password);
+                if (result.success) {
+                    window.location.href = 'index.html';
+                } else {
+                    const err = document.getElementById('error-msg');
+                    err.textContent = result.message;
+                    err.style.display = 'block';
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

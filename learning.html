@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 학습 - HI 면접 MASTER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .history-item {
+            display: flex;
+            gap: var(--spacing-md);
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .history-thumb {
+            width: 160px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            .history-item {
+                flex-direction: column;
+            }
+
+            .history-thumb {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="app-header"></header>
+
+    <main class="container main-content">
+        <h1 class="section-title mb-4">나의 학습 현황</h1>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-completed">0</div>
+                <div class="stat-label">완료한 강의</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-inprogress">0</div>
+                <div class="stat-label">학습 중</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">전체 학습 이력</div>
+            </div>
+        </div>
+
+        <section>
+            <h2 class="section-title mb-4">시청 기록</h2>
+            <div id="history-container" class="history-list">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        Auth.requireAuth();
+
+        async function renderLearning() {
+            const progress = await DataManager.getProgress();
+            const allVideos = await DataManager.getVideos();
+
+            // Calculate Stats
+            let completed = 0;
+            let inProgress = 0;
+            const historyItems = [];
+
+            // Iterate over progress keys (videoIds)
+            Object.keys(progress).forEach(videoId => {
+                const p = progress[videoId];
+                const video = allVideos.find(v => v.id === videoId);
+
+                if (video) {
+                    if (p.status === 'completed') completed++;
+                    else if (p.status === 'in-progress') inProgress++;
+
+                    historyItems.push({
+                        ...video,
+                        progress: p
+                    });
+                }
+            });
+
+            // Update Stats UI
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-inprogress').textContent = inProgress;
+            document.getElementById('stat-total').textContent = historyItems.length;
+
+            // Sort by last watched desc
+            historyItems.sort((a, b) => new Date(b.progress.lastWatched || 0) - new Date(a.progress.lastWatched || 0));
+
+            // Render List
+            const list = document.getElementById('history-container');
+            if (historyItems.length === 0) {
+                list.innerHTML = '<p class="text-center text-muted">학습 기록이 없습니다.</p>';
+                return;
+            }
+
+            list.innerHTML = historyItems.map(item => {
+                const isCompleted = item.progress.status === 'completed';
+                const progressPercent = isCompleted ? 100 : 50;
+
+                return `
+                <div class="history-item">
+                    <img src="${item.thumbnail}" alt="${item.title}" class="history-thumb">
+                    <div class="history-content">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: 600;">${item.title}</h3>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: ${isCompleted ? 'var(--success-color)' : 'var(--primary-color)'}">
+                                ${isCompleted ? '완료' : '학습 중'}
+                            </span>
+                        </div>
+                        <div class="progress-container mb-4">
+                            <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <a href="watch.html?id=${item.id}" class="btn btn-secondary btn-sm">
+                            ${isCompleted ? '다시 보기' : '이어보기'}
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        renderLearning();
+    </script>
+</body>
+
+</html>

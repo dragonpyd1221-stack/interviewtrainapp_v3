@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강의 목록 - HI 면접 MASTER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .filter-btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="app-header"></header>
+
+    <main class="container main-content">
+        <div class="section-header">
+            <h1 class="section-title">강의 목록</h1>
+        </div>
+
+        <div class="filters-container" id="category-filters">
+            <!-- Injected via JS -->
+        </div>
+
+        <div id="videos-grid" class="grid grid-3">
+            <!-- Injected via JS -->
+        </div>
+
+        <div id="no-results" class="text-center hidden" style="padding: 3rem;">
+            <p class="text-muted">이 카테고리에 해당하는 강의가 없습니다.</p>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        Auth.requireAuth();
+
+        let currentCategory = 'all';
+
+        async function init() {
+            await renderFilters();
+            await renderVideos();
+        }
+
+        async function renderFilters() {
+            const categories = await DataManager.getCategories();
+            const container = document.getElementById('category-filters');
+
+            container.innerHTML = categories.map(cat => `
+                <button class="filter-btn ${cat.id === currentCategory ? 'active' : ''}" 
+                        onclick="setCategory('${cat.id}')">
+                    ${cat.name}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(id) {
+            currentCategory = id;
+            renderFilters();
+            renderVideos();
+        }
+
+        window.setCategory = setCategory;
+
+        async function renderVideos() {
+            const allVideos = await DataManager.getVideos();
+            const filtered = currentCategory === 'all'
+                ? allVideos
+                : allVideos.filter(v => v.category === currentCategory);
+
+            const grid = document.getElementById('videos-grid');
+            const noResults = document.getElementById('no-results');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
+            // Optimization: Fetch all progress once
+            const allProgress = await DataManager.getProgress();
+
+            grid.innerHTML = filtered.map(video => {
+                const progress = allProgress[video.id] || { status: 'unwatched' };
+
+                let statusBadge = '';
+                if (progress.status === 'completed') {
+                    statusBadge = '<span style="position:absolute; top:8px; right:8px; background:var(--success-color); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; font-weight:600;">완료</span>';
+                }
+
+                const catName = video.category === 'required' ? '필수 교육' : (video.category === 'optional' ? '선택 교육' : video.category);
+
+                return `
+                <div class="card" style="position:relative;">
+                    ${statusBadge}
+                    <a href="watch.html?id=${video.id}">
+                        <img src="${video.thumbnail}" alt="${video.title}" class="card-img">
+                    </a>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;">${catName}</span>
+                            <span>${video.duration}</span>
+                        </div>
+                        <h3 class="card-title">
+                            <a href="watch.html?id=${video.id}">${video.title}</a>
+                        </h3>
+                        <a href="watch.html?id=${video.id}" class="btn btn-secondary btn-block mt-4" style="font-size: 0.875rem;">
+                            ${progress.status === 'in-progress' ? '계속 이어보기' : '학습 시작하기'}
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

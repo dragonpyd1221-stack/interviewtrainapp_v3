@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - HI 면접 MASTER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header id="app-header"></header>
+
+    <main class="container main-content">
+        <section class="mb-4">
+            <h1 id="welcome-msg">환영합니다!</h1>
+            <p class="text-muted">학습을 계속하거나 새로운 강의를 시작해보세요.</p>
+        </section>
+
+        <!-- Continue Watching Section -->
+        <section id="continue-watching-section" class="hidden">
+            <div class="section-header">
+                <h2 class="section-title">계속 시청하기</h2>
+            </div>
+            <div id="continue-watching-container" class="grid grid-2">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- Recommended Section -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">추천 강의</h2>
+                <a href="videos.html" class="btn btn-secondary btn-sm">전체 보기</a>
+            </div>
+            <div id="recommended-container" class="grid grid-3">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Auth Check
+        const currentUser = Auth.requireAuth();
+
+        if (currentUser) {
+            document.getElementById('welcome-msg').textContent = `${currentUser.name}님, 환영합니다!`;
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const allVideos = await DataManager.getVideos();
+            const progress = await DataManager.getProgress();
+
+            // 1. Find 'Continue Watching' (in progress, not completed)
+            const inProgressVideos = allVideos.filter(v => {
+                const p = progress[v.id];
+                return p && p.status === 'in-progress';
+            }).slice(0, 2);
+
+            const continueContainer = document.getElementById('continue-watching-container');
+            const continueSection = document.getElementById('continue-watching-section');
+
+            if (inProgressVideos.length > 0) {
+                continueSection.classList.remove('hidden');
+                continueContainer.innerHTML = inProgressVideos.map(video => createVideoCard(video, progress[video.id])).join('');
+            }
+
+            // 2. Recommendations (Required category or just random)
+            const recommended = allVideos.filter(v => v.category === 'required').slice(0, 3);
+            const recContainer = document.getElementById('recommended-container');
+            recContainer.innerHTML = recommended.map(video => createVideoCard(video)).join('');
+        }
+
+        function createVideoCard(video, progressData = null) {
+            let progressHtml = '';
+            if (progressData) {
+                const pct = Math.min(100, Math.round((progressData.timestamp / 100) * 100));
+                progressHtml = `
+                    <div class="progress-container" style="margin-top: 0.5rem;">
+                        <div class="progress-bar" style="width: 50%"></div> 
+                    </div>
+                    <small class="text-muted" style="display:block; margin-top:2px;">이어보기...</small>
+                `;
+            }
+
+            const catName = video.category === 'required' ? '필수 교육' : (video.category === 'optional' ? '선택 교육' : video.category);
+
+            return `
+                <div class="card">
+                    <a href="watch.html?id=${video.id}">
+                        <img src="${video.thumbnail}" alt="${video.title}" class="card-img">
+                    </a>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;">${catName}</span>
+                            <span>${video.duration}</span>
+                        </div>
+                        <h3 class="card-title">
+                            <a href="watch.html?id=${video.id}">${video.title}</a>
+                        </h3>
+                        ${progressHtml}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>
