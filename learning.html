@@ -157,24 +157,34 @@
                 const progressPercent = isCompleted ? 100 : 50;
 
                 return `
-                <div class="history-item">
-                    <img src="${item.thumbnail}" alt="${item.title}" class="history-thumb">
-                    <div class="history-content">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
-                            <h3 style="font-size: 1.1rem; font-weight: 600;">${item.title}</h3>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: ${isCompleted ? 'var(--success-color)' : 'var(--primary-color)'}">
-                                ${isCompleted ? '완료' : '학습 중'}
-                            </span>
+                <div class="card group">
+                    <a href="watch.html?id=${item.id}" class="card-img-wrapper">
+                        <img src="${item.thumbnail}" alt="${item.title}" class="card-img">
+                        <div class="card-badges">
+                             <span class="badge ${isCompleted ? 'badge-required' : 'badge-optional'}" 
+                                   style="background:${isCompleted ? 'var(--success-color)' : 'var(--primary-color)'}">
+                                ${isCompleted ? '완료됨' : '학습 중'}
+                             </span>
                         </div>
+                    </a>
+                    <div class="card-body">
+                        <h3 class="card-title">${item.title}</h3>
+                        
                         <div class="progress-container mb-4">
                             <div class="progress-bar" style="width: ${progressPercent}%"></div>
                         </div>
-                        <a href="watch.html?id=${item.id}" class="btn btn-secondary btn-sm">
-                            ${isCompleted ? '다시 보기' : '이어보기'}
-                        </a>
+                        
+                        <div class="card-action">
+                            <a href="watch.html?id=${item.id}" class="btn ${isCompleted ? 'btn-secondary' : 'btn-primary'} btn-block">
+                                ${isCompleted ? '다시 보기' : '이어보기'}
+                            </a>
+                        </div>
                     </div>
                 </div>
             `}).join('');
+
+            // Also need to switch the container class from 'history-list' to 'grid grid-3' or similar to utilize the card layout
+            document.getElementById('history-container').className = 'grid grid-3';
         }
 
         renderLearning();

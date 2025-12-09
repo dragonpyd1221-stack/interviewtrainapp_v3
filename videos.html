@@ -123,22 +123,26 @@
                 const catName = video.category === 'required' ? '필수 교육' : (video.category === 'optional' ? '선택 교육' : video.category);
 
                 return `
-                <div class="card" style="position:relative;">
-                    ${statusBadge}
-                    <a href="watch.html?id=${video.id}">
+                <div class="card group">
+                    <a href="watch.html?id=${video.id}" class="card-img-wrapper">
                         <img src="${video.thumbnail}" alt="${video.title}" class="card-img">
+                        <div class="card-badges">
+                             <span class="badge badge-default" style="background:#00000080">${catName}</span>
+                             ${statusBadge}
+                        </div>
                     </a>
                     <div class="card-body">
-                        <div class="card-meta">
-                            <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;">${catName}</span>
-                            <span>${video.duration}</span>
-                        </div>
                         <h3 class="card-title">
                             <a href="watch.html?id=${video.id}">${video.title}</a>
                         </h3>
-                        <a href="watch.html?id=${video.id}" class="btn btn-secondary btn-block mt-4" style="font-size: 0.875rem;">
-                            ${progress.status === 'in-progress' ? '계속 이어보기' : '학습 시작하기'}
-                        </a>
+                        <div class="card-meta">
+                            <span>⏱ ${video.duration}</span>
+                        </div>
+                        <div class="card-action mt-4">
+                            <a href="watch.html?id=${video.id}" class="btn ${progress.status === 'in-progress' ? 'btn-primary' : 'btn-secondary'} btn-block">
+                                ${progress.status === 'in-progress' ? '이어보기' : '학습 시작'}
+                            </a>
+                        </div>
                     </div>
                 </div>
             `}).join('');

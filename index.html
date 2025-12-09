@@ -111,14 +111,17 @@
                         <h3 class="card-title">
                             <a href="watch.html?id=${video.id}">${video.title}</a>
                         </h3>
+                        
                         <div class="card-meta">
-                            <span>재생시간 ${video.duration}</span>
+                            <span>⏱ ${video.duration}</span>
                         </div>
                         
                         ${progressHtml}
                         
                         <div class="card-action mt-4">
-                            <a href="watch.html?id=${video.id}" class="btn btn-primary btn-block">바로 수강하기</a>
+                            <a href="watch.html?id=${video.id}" class="btn btn-primary btn-block">
+                                ${progressData ? '이어보기' : '학습하기'}
+                            </a>
                         </div>
                     </div>
                 </div>
