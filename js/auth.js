@@ -1,7 +1,7 @@
 const Auth = {
     async login(email, password) {
         try {
-            const res = await fetch('http://localhost:8000/api/login', {
+            const res = await fetch(`${window.API_BASE_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

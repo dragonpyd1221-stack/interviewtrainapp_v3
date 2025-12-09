@@ -1,10 +1,10 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+// API_BASE_URL is defined in config.js and available as window.API_BASE_URL
 
 const DataManager = {
     // --- Videos ---
     async getVideos(category = null) {
         try {
-            let url = `${API_BASE_URL}/videos`;
+            let url = `${window.API_BASE_URL}/videos`;
             if (category && category !== 'all') {
                 url += `?category=${category}`;
             }
@@ -19,7 +19,7 @@ const DataManager = {
 
     async getVideoById(id) {
         try {
-            const res = await fetch(`${API_BASE_URL}/videos/${id}`);
+            const res = await fetch(`${window.API_BASE_URL}/videos/${id}`);
             if (!res.ok) return null;
             return await res.json();
         } catch (e) {
@@ -38,7 +38,7 @@ const DataManager = {
 
     async addVideo(formData) {
         // formData must contain: title, category, file (optional), etc.
-        const res = await fetch(`${API_BASE_URL}/videos`, {
+        const res = await fetch(`${window.API_BASE_URL}/videos`, {
             method: 'POST',
             body: formData, // No Content-Type header when sending FormData; browser sets it
         });
@@ -47,7 +47,7 @@ const DataManager = {
     },
 
     async deleteVideo(id) {
-        await fetch(`${API_BASE_URL}/videos/${id}`, { method: 'DELETE' });
+        await fetch(`${window.API_BASE_URL}/videos/${id}`, { method: 'DELETE' });
     },
 
     // --- Progress ---
@@ -57,7 +57,7 @@ const DataManager = {
         if (!user) return {};
 
         try {
-            const res = await fetch(`${API_BASE_URL}/progress/${user.email}`);
+            const res = await fetch(`${window.API_BASE_URL}/progress/${user.email}`);
             return await res.json();
         } catch (e) {
             console.error(e);
@@ -81,7 +81,7 @@ const DataManager = {
             status: data.status
         };
 
-        await fetch(`${API_BASE_URL}/progress`, {
+        await fetch(`${window.API_BASE_URL}/progress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
