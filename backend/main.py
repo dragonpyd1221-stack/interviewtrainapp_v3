@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, Form, File, HTTPException
+from fastapi import FastAPI, UploadFile, Form, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -56,6 +56,7 @@ def get_video_detail(video_id: str):
 
 @app.post("/api/videos")
 async def upload_video(
+    request: Request,
     title: str = Form(...),
     description: str = Form(""),
     category: str = Form(...),
@@ -76,7 +77,8 @@ async def upload_video(
             shutil.copyfileobj(file.file, buffer)
         
         # URL accessible from frontend
-        video_url = f"http://localhost:8000/uploads/videos/{new_filename}"
+        # Use request.base_url to get the current server URL (works for localhost and Render)
+        video_url = f"{request.base_url}uploads/videos/{new_filename}"
     else:
         # If no file, maybe it's an external URL logic provided by frontend (though our admin form implies file mostly)
         # For this refactor, let's assume if no file is uploaded, we might have a text URL?
