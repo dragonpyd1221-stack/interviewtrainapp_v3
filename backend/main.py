@@ -7,8 +7,23 @@ import os
 import time
 from datetime import datetime
 from typing import Optional, List
+import boto3
+from botocore.exceptions import NoCredentialsError
 import database
 import models
+
+# --- Configuration ---
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_S3_BUCKET_NAME = os.getenv("AWS_S3_BUCKET_NAME")
+AWS_REGION = os.getenv("AWS_REGION", "ap-northeast-2") # Default to Seoul if not set
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name=AWS_REGION
+)
 
 app = FastAPI()
 
@@ -21,11 +36,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ensure uploads directory exists
+# Ensure uploads directory exists (Legacy support or temp storage if needed)
 UPLOAD_DIR = "uploads/videos"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Mount static files
+# Mount static files (Still needed for legacy local files if any remain)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.on_event("startup")
@@ -36,7 +51,7 @@ def startup_event():
 @app.post("/api/login")
 def login(user: models.UserLogin):
     # Mock Auth
-    if user.email == "admin@test.com" and user.password == "admin":
+    if user.email == "admin@test.com" and (user.password == "admin" or user.password == "password"):
         return {"email": user.email, "role": "admin", "token": "mock-admin-token", "name": "Admin User"}
     elif user.email and user.password: # Allow any other user
         return {"email": user.email, "role": "user", "token": "mock-user-token", "name": "Demo User"}
@@ -65,31 +80,51 @@ async def upload_video(
     thumbnail: str = Form("")
 ):
     video_id = f"v{int(time.time())}"
-    
     video_url = ""
-    # Process File Upload
+
+    # Process File Upload with S3
     if file:
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{video_id}{file_extension}"
-        file_path = os.path.join(UPLOAD_DIR, new_filename)
         
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        print(f"[S3 UPLOAD] Starting upload to S3...")
+        print(f"[S3 UPLOAD] Bucket: {AWS_S3_BUCKET_NAME}")
+        print(f"[S3 UPLOAD] Object Key: {new_filename}")
+        print(f"[S3 UPLOAD] Region: {AWS_REGION}")
         
-        # URL accessible from frontend
-        # Use request.base_url to get the current server URL (works for localhost and Render)
-        video_url = f"{request.base_url}uploads/videos/{new_filename}"
+        try:
+            # Upload to S3
+            s3_client.upload_fileobj(
+                file.file,
+                AWS_S3_BUCKET_NAME,
+                new_filename,
+                ExtraArgs={'ContentType': file.content_type} # Ensure correct mime type
+            )
+            
+            # Generate S3 URL
+            video_url = f"https://{AWS_S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{new_filename}"
+            
+            print(f"[S3 UPLOAD] ✅ SUCCESS - File uploaded to S3")
+            print(f"[S3 UPLOAD] S3 URL: {video_url}")
+            
+        except NoCredentialsError as e:
+            print(f"[S3 UPLOAD] ❌ ERROR - AWS Credentials not found")
+            print(f"[S3 UPLOAD] Details: {str(e)}")
+            raise HTTPException(status_code=500, detail="AWS Credentials not found")
+        except Exception as e:
+            print(f"[S3 UPLOAD] ❌ ERROR - S3 Upload failed")
+            print(f"[S3 UPLOAD] Error type: {type(e).__name__}")
+            print(f"[S3 UPLOAD] Error message: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"S3 Upload failed: {str(e)}")
+
     else:
-        # If no file, maybe it's an external URL logic provided by frontend (though our admin form implies file mostly)
-        # For this refactor, let's assume if no file is uploaded, we might have a text URL?
-        # But our current requirement emphasizes file upload. If purely URL based, we'd need another field.
-        # Let's support an optional 'source_url' form field just in case, or default to placeholder
+        print(f"[S3 UPLOAD] ⚠️  No file provided, using fallback URL")
+        # Fallback if no file uploaded
         pass
 
-    # If the user provided an external URL in the 'url' field (handled by frontend logic sending either file or string),
-    # but here we are using multipart. Let's keep it simple: if file, use file. If not file, use placeholder.
     if not video_url:
          video_url = "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" # Fallback
+         print(f"[S3 UPLOAD] Using fallback URL: {video_url}")
 
     new_video = {
         "id": video_id,
@@ -103,18 +138,28 @@ async def upload_video(
     }
     
     database.create_video(new_video)
+    print(f"[S3 UPLOAD] Video record created in database with ID: {video_id}")
     return new_video
 
 @app.delete("/api/videos/{video_id}")
 def delete_video(video_id: str):
     video = database.get_video(video_id)
     if video:
-        # Optional: Delete file from disk
-        if "uploads/videos" in video["url"]:
-            filename = os.path.basename(video["url"])
-            path = os.path.join(UPLOAD_DIR, filename)
-            if os.path.exists(path):
-                os.remove(path)
+        # Delete from S3 if it's an S3 URL
+        if AWS_S3_BUCKET_NAME in video["url"] and "amazonaws.com" in video["url"]:
+            try:
+                # Extract filename from URL
+                filename = video["url"].split("/")[-1]
+                s3_client.delete_object(Bucket=AWS_S3_BUCKET_NAME, Key=filename)
+            except Exception as e:
+                print(f"Failed to delete from S3: {e}")
+
+        # Legacy: Delete local file if exists
+        elif "uploads/videos" in video["url"]:
+             filename = os.path.basename(video["url"])
+             path = os.path.join(UPLOAD_DIR, filename)
+             if os.path.exists(path):
+                 os.remove(path)
         
         database.delete_video(video_id)
         return {"status": "deleted"}
