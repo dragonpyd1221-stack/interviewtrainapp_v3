@@ -16,6 +16,7 @@ const App = {
         if (!user) return; // Don't render header on login page properly if wrapped
 
         const isAdmin = user.role === 'admin';
+        const avatarUrl = user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=4f46e5&color=fff';
 
         headerEl.innerHTML = `
             <nav class="navbar">
@@ -31,7 +32,7 @@ const App = {
 
                     <div class="nav-profile" onclick="App.toggleProfileMenu()">
                         <div class="avatar">
-                            <img src="${user.avatar}" alt="${user.name}" style="border-radius: 50%; width: 100%; height: 100%;">
+                            <img src="${avatarUrl}" alt="${user.name}" style="border-radius: 50%; width: 100%; height: 100%;">
                         </div>
                         <span style="font-weight: 500; font-size: 0.9rem;">${user.name}</span>
                         <!-- Simple dropdown -->
