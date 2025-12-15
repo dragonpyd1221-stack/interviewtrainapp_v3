@@ -9,6 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Prevent flash of unauthenticated content */
+        body {
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        body.authenticated {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -47,13 +58,13 @@
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // Auth Check
+        // Auth Check - requireAuth() redirects if not logged in
         const currentUser = Auth.requireAuth();
 
-        if (currentUser) {
-            document.getElementById('welcome-msg').textContent = `환영합니다, ${currentUser.name}님!`;
-            loadDashboard();
-        }
+        // If we reach here, user is authenticated (otherwise redirected)
+        document.body.classList.add('authenticated');
+        document.getElementById('welcome-msg').textContent = `환영합니다, ${currentUser.name}님!`;
+        loadDashboard();
 
         async function loadDashboard() {
             const allVideos = await DataManager.getVideos();

@@ -10,6 +10,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Prevent flash of unauthenticated content */
+        body {
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        body.authenticated {
+            opacity: 1;
+        }
+
         .admin-table {
             width: 100%;
             border-collapse: collapse;
@@ -145,6 +155,7 @@
     <script>
         // Restrict to Admin
         Auth.requireAdmin();
+        document.body.classList.add('authenticated');
 
         async function init() {
             await renderCategoryOptions();

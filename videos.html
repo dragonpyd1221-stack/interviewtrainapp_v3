@@ -10,6 +10,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Prevent flash of unauthenticated content */
+        body {
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        body.authenticated {
+            opacity: 1;
+        }
+
         .filter-btn {
             background: white;
             border: 1px solid var(--border-color);
@@ -64,6 +74,7 @@
     <script src="js/app.js"></script>
     <script>
         Auth.requireAuth();
+        document.body.classList.add('authenticated');
 
         let currentCategory = 'all';
 
