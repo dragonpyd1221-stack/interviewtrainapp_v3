@@ -20,6 +20,15 @@
             opacity: 1;
         }
 
+        /* Hide video filename from browser controls */
+        video::-webkit-media-text-track-container {
+            display: none !important;
+        }
+
+        video::cue {
+            display: none !important;
+        }
+
         .player-layout {
             display: grid;
             grid-template-columns: 1fr 350px;
@@ -171,9 +180,14 @@
 
             document.getElementById('video-category').textContent = catName;
 
-            // Set source
+            // Set source and override title to show only DB title, not filename
             player.src = currentVideo.url;
             player.poster = currentVideo.thumbnail;
+            player.title = currentVideo.title; // Override with DB title
+            player.setAttribute('aria-label', currentVideo.title); // Accessibility
+
+            // Remove any filename from download attribute if present
+            player.removeAttribute('download');
         }
 
         async function renderPlaylist() {
