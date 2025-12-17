@@ -1,73 +1,91 @@
 /* =========================================
-   1. CSS Variables & Theme (Indigo / Netflix Style)
+   1. CSS Variables & Theme (Modern Indigo / Service UX)
    ========================================= */
 :root {
-    /* Colors - Indigo Palette */
-    --primary-color: #3A5BA0;
-    /* Indigo Main */
-    --primary-dark: #2C4478;
-    /* Darker Indigo */
-    --primary-light: #5E7DD1;
-    /* Lighter Indigo */
-    --accent-color: #4FC3F7;
-    /* Light Blue Accent */
+    /* Brand Colors - Calm & Trustworthy Indigo */
+    --primary-color: #4355CC;
+    /* Modern, vibrant Indigo */
+    --primary-dark: #3241A6;
+    /* Deep interaction state */
+    --primary-light: #EEF2FF;
+    /* Very light tint for backgrounds */
 
-    --bg-body: #F6F7FB;
-    /* Very Light Gray/Blueish */
+    --accent-color: #38B2AC;
+    /* Teal/Mint for freshness */
+
+    /* Backgrounds */
+    --bg-body: #F7F8FA;
+    /* Cool neutral light gray */
     --bg-card: #FFFFFF;
+    --bg-input: #FFFFFF;
 
-    --text-main: #1A1A1A;
-    /* Almost Black */
-    --text-muted: #666666;
-    /* Standard Gray */
-    --text-light: #999999;
+    /* Text Colors */
+    --text-main: #1F2937;
+    /* Sharp dark gray (not pure black) */
+    --text-muted: #6B7280;
+    /* Readable secondary text */
+    --text-light: #9CA3AF;
+    /* Placeholders/disabled */
 
-    --border-color: #E0E0E0;
+    /* Borders & Lines */
+    --border-color: #E5E7EB;
 
-    --success-color: #2E7D32;
-    --danger-color: #D32F2F;
-    --warning-color: #ED6C02;
+    /* Semantic */
+    --success-color: #059669;
+    --danger-color: #DC2626;
+    --warning-color: #D97706;
 
-    /* Spacing & Sizing */
-    --container-max-width: 1200px;
-    --header-height: 64px;
+    /* Spacing & Layout */
+    --container-max-width: 1140px;
+    /* Slightly tighter for better readability */
+    --header-height: 60px;
+    /* Compact on mobile/desktop default */
 
-    /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Typography - Inter/System */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
     /* Effects */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    /* Modern standard */
+    --radius-lg: 16px;
+    /* Card corners */
+    --radius-pill: 9999px;
+
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =========================================
-   2. Base Styles
+   2. Base Styles & Reset
    ========================================= */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     font-family: var(--font-family);
     background-color: var(--bg-body);
     color: var(--text-main);
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 16px;
+    /* Base for accessibility */
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 a {
     text-decoration: none;
     color: inherit;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: var(--transition);
 }
 
 ul {
@@ -82,22 +100,25 @@ img {
 
 button,
 input,
-select {
+select,
+textarea {
     font-family: inherit;
+    font-size: 100%;
 }
 
 /* =========================================
-   3. Layout
+   3. Layout Utilities
    ========================================= */
 .container {
+    width: 100%;
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 20px;
 }
 
 .main-content {
     min-height: calc(100vh - var(--header-height));
-    padding: 40px 0;
+    padding: 32px 0 60px 0;
 }
 
 section {
@@ -107,20 +128,18 @@ section {
 .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-color);
-    /* Subtle divider */
+    align-items: flex-end;
+    margin-bottom: 20px;
 }
 
 .section-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-main);
+    letter-spacing: -0.02em;
 }
 
-/* Grids */
+/* Responsive Grid System */
 .grid {
     display: grid;
     gap: 24px;
@@ -139,12 +158,10 @@ section {
 }
 
 /* =========================================
-   4. Components
+   4. Component: Navigation (Mobile First Refactor)
    ========================================= */
-
-/* Navbar */
 .navbar {
-    background: #FFF;
+    background: #FFFFFF;
     height: var(--header-height);
     display: flex;
     align-items: center;
@@ -152,37 +169,38 @@ section {
     top: 0;
     z-index: 1000;
     box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .nav-container {
     width: 100%;
-    margin: 0 auto;
     max-width: var(--container-max-width);
-    padding: 0 16px;
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .nav-brand {
-    font-size: 1.25rem;
-    /* ~20px */
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--primary-color);
     letter-spacing: -0.5px;
-    margin-right: 32px;
+    text-transform: uppercase;
 }
 
 .nav-menu {
     display: flex;
-    gap: 24px;
+    gap: 32px;
     align-items: center;
 }
 
 .nav-link {
     font-weight: 500;
     color: var(--text-muted);
-    padding: 8px 0;
+    font-size: 0.95rem;
+    padding: 6px 0;
     position: relative;
 }
 
@@ -191,26 +209,17 @@ section {
     color: var(--primary-color);
 }
 
-.nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-color);
-    border-radius: 2px;
-}
-
+/* Profile Badge */
 .nav-profile {
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    background: #F0F4FF;
-    /* Subtle colored BG */
-    padding: 4px 12px 4px 4px;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    background: var(--primary-light);
     border-radius: 50px;
+    color: var(--primary-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
     transition: var(--transition);
 }
 
@@ -219,75 +228,27 @@ section {
 }
 
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--primary-color);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
-/* Responsive Navbar Handle */
-@media (max-width: 768px) {
-    .navbar {
-        height: auto;
-        padding: 12px 0;
-    }
-
-    .nav-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .nav-menu {
-        width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        order: 2;
-    }
-
-    .nav-link {
-        width: 100%;
-        padding: 8px;
-        border-radius: 6px;
-    }
-
-    .nav-link:hover {
-        background: #F0F4FF;
-    }
-
-    .nav-link.active::after {
-        display: none;
-    }
-
-    .nav-profile {
-        width: 100%;
-        justify-content: flex-start;
-        padding: 8px;
-        background: transparent;
-        order: 1;
-        margin-bottom: 8px;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-}
-
-
-/* Cards (Netflix/Modern Style) */
+/* =========================================
+   5. Component: Cards (Clean & Balanced)
+   ========================================= */
 .card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    /* Subtle definition */
     overflow: hidden;
     transition: var(--transition);
     display: flex;
@@ -296,15 +257,15 @@ section {
 }
 
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
 }
 
 .card-img-wrapper {
     position: relative;
     padding-top: 56.25%;
-    /* 16:9 */
-    background: #EEE;
+    /* 16:9 Aspect Ratio */
+    background: #E5E7EB;
     overflow: hidden;
 }
 
@@ -315,19 +276,20 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s ease-out;
 }
 
 .card:hover .card-img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
-/* Badges */
-.card-img-wrapper .card-badges {
+/* Badges positioned clearly */
+.card-badges {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
     left: auto !important;
+    /* Force priority */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -337,47 +299,58 @@ section {
 
 .badge {
     padding: 4px 10px;
-    border-radius: 20px;
-    /* Pill shape */
+    border-radius: 6px;
     font-size: 0.75rem;
-    /* ~12px */
     font-weight: 700;
     color: white;
-    text-transform: uppercase;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.65);
+    /* Default fallback */
     backdrop-filter: blur(4px);
+    letter-spacing: 0.02em;
 }
 
 .badge-required {
-    background: linear-gradient(135deg, #FF6B6B, #EE5253);
+    background: #DC2626;
 }
 
+/* Strong red for required */
 .badge-optional {
-    background: rgba(58, 91, 160, 0.9);
+    background: var(--primary-color);
 }
 
 .badge-default {
-    background: rgba(0, 0, 0, 0.6);
+    background: #4B5563;
 }
 
+/* Card Body Layout - Prevents Overlap */
 .card-body {
     padding: 20px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    /* Fills remaining height */
 }
 
+/* Title area with fixed line height logic */
 .card-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
+    line-height: 1.4;
     margin-bottom: 8px;
     color: var(--text-main);
-    line-height: 1.4;
+
+    /* Truncate after 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-clamp: 2;
     overflow: hidden;
+    min-height: 2.8em;
+    /* Reserve height for 2 lines alignment */
+}
+
+.card-title a {
+    transition: color 0.15s;
 }
 
 .card-title a:hover {
@@ -389,26 +362,34 @@ section {
     color: var(--text-muted);
     margin-bottom: 16px;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
 }
 
+/* Push action to bottom */
 .card-action {
     margin-top: auto;
+    padding-top: 16px;
 }
 
-
-/* Buttons */
+/* =========================================
+   6. Buttons & Inputs
+   ========================================= */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 12px 20px;
+    /* Larger touch area */
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.95rem;
-    transition: all 0.2s ease;
+    line-height: 1;
+    transition: var(--transition);
     cursor: pointer;
     border: none;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .btn-block {
@@ -418,12 +399,12 @@ section {
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
-    box-shadow: 0 4px 6px rgba(58, 91, 160, 0.2);
+    box-shadow: 0 2px 4px rgba(67, 85, 204, 0.2);
 }
 
 .btn-primary:hover {
     background-color: var(--primary-dark);
-    box-shadow: 0 6px 12px rgba(58, 91, 160, 0.3);
+    box-shadow: 0 4px 8px rgba(67, 85, 204, 0.3);
     transform: translateY(-1px);
 }
 
@@ -434,30 +415,32 @@ section {
 }
 
 .btn-secondary:hover {
-    background-color: #F8F9FA;
-    border-color: #CCC;
+    background-color: #F9FAFB;
+    border-color: #D1D5DB;
 }
 
 .btn-sm {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 0.85rem;
+    box-shadow: none;
 }
 
-/* Progress */
+/* Progress Bar */
 .progress-container {
-    background: #EEF2F6;
+    background: var(--border-color);
     height: 6px;
     border-radius: 3px;
     width: 100%;
+    margin-bottom: 4px;
     overflow: hidden;
-    margin-bottom: 6px;
 }
 
 .progress-bar {
     background: var(--success-color);
     height: 100%;
     border-radius: 3px;
-    transition: width 0.4s ease;
+    width: 0%;
+    /* Default */
 }
 
 /* Utilities */
@@ -465,27 +448,194 @@ section {
     display: none !important;
 }
 
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.mt-4 {
+    margin-top: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1rem !important;
+}
+
 .text-center {
     text-align: center;
 }
 
-.text-muted {
-    color: var(--text-muted);
+/* =========================================
+   7. Mobile & Responsive Refinements
+   ========================================= */
+
+/* Tablet & Smaller Desktop */
+@media (max-width: 1024px) {
+    .container {
+        max-width: 100%;
+    }
+
+    .grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .player-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-.mt-4 {
-    margin-top: 1rem;
+/* Mobile Devices (Max 768px) */
+@media (max-width: 768px) {
+
+    /* Layout */
+    .main-content {
+        padding-top: 24px;
+    }
+
+    section {
+        margin-bottom: 36px;
+        padding-bottom: 24px;
+        border-bottom: 1px dashed var(--border-color);
+    }
+
+    section:last-child {
+        border-bottom: none;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+        /* Full width cards */
+        gap: 20px;
+    }
+
+    /* Navbar - Column Layout on Mobile */
+    .navbar {
+        height: auto;
+        padding: 12px 0;
+        position: relative;
+        /* Let it scroll or be sticky based on pref, sticking with sticky logic but adjusting content */
+    }
+
+    .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 0 16px;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 4px;
+        /* Tight vertical stack */
+    }
+
+    .nav-link {
+        display: block;
+        padding: 12px 16px;
+        background: #F9FAFB;
+        border-radius: var(--radius-md);
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    .nav-link.active {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+    }
+
+    .nav-link.active::after {
+        display: none;
+    }
+
+    /* Profile moves to top right absolute or just part of flow? 
+       To keep it simple, let's put it at the top row or bottom */
+    .nav-profile {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 12px 16px;
+        background: #F0Fdf4;
+        /* Light tint */
+        margin-top: 8px;
+    }
+
+    /* Mobile Typography */
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    /* Card Adjustments */
+    .card {
+        box-shadow: var(--shadow-sm);
+        /* Lighter shadow on mobile */
+    }
+
+    .card-img-wrapper {
+        padding-top: 50%;
+        /* Slightly shorter images on mobile to save space */
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        min-height: auto;
+        /* Let it flow naturally */
+        -webkit-line-clamp: 3;
+        /* Allow 3 lines on mobile if needed */
+    }
 }
 
-.mb-4 {
-    margin-bottom: 1rem;
+/* =========================================
+   8. Specific Page Corrections
+   ========================================= */
+
+/* Watch Page */
+.player-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+}
+
+.video-container {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    aspect-ratio: 16/9;
+    background: #000;
+}
+
+.sidebar-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 8px;
+}
+
+.sidebar-item:hover {
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.sidebar-thumb {
+    width: 100px;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 6px;
 }
 
 /* Admin / Forms */
 .form-card {
     background: white;
     padding: 32px;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     max-width: 600px;
     margin: 0 auto;
@@ -539,82 +689,4 @@ section {
     padding: 16px;
     border-bottom: 1px solid #F0F0F0;
     font-size: 0.95rem;
-}
-
-/* Watch Page Sidebar */
-.player-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 32px;
-}
-
-.video-container {
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    aspect-ratio: 16/9;
-    background: #000;
-}
-
-.sidebar-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.sidebar-item:hover {
-    background: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.sidebar-thumb {
-    width: 100px;
-    aspect-ratio: 16/9;
-    object-fit: cover;
-    border-radius: 6px;
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 1024px) {
-    .grid-4 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .player-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .grid-2,
-    .grid-3,
-    .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .form-card {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .grid-2,
-    .grid-3,
-    .grid-4 {
-        grid-template-columns: 1fr;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .btn {
-        width: 100%;
-    }
 }
