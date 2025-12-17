@@ -125,6 +125,11 @@ section {
     margin-bottom: 48px;
 }
 
+.sidebar {
+    display: none !important;
+    /* Hiding "Next Video" UI as requested */
+}
+
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -674,7 +679,9 @@ section {
 /* Watch Page */
 .player-layout {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    /* grid-template-columns: 1fr 340px; Original layout */
+    grid-template-columns: 1fr;
+    /* Full width modification */
     gap: 32px;
 }
 
