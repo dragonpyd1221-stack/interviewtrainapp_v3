@@ -488,93 +488,107 @@ section {
 
     /* Layout */
     .main-content {
-        padding-top: 24px;
+        padding-top: 16px;
+        /* Compact top padding */
+    }
+
+    .container {
+        padding: 0 16px;
+        /* Safe padding for cards */
     }
 
     section {
-        margin-bottom: 36px;
-        padding-bottom: 24px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
         border-bottom: 1px dashed var(--border-color);
     }
 
     section:last-child {
         border-bottom: none;
+        margin-bottom: 0;
     }
 
+    /* Welcome Header Optimization */
+    /* Reduce vertical space so cards appear above fold */
+    section:first-of-type {
+        margin-bottom: 20px;
+        padding-bottom: 4px;
+        border-bottom: none;
+    }
+
+    section:first-of-type h1 {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+
+    section:first-of-type p.text-muted {
+        font-size: 0.9rem;
+    }
+
+    /* Grids */
     .grid-2,
     .grid-3,
     .grid-4 {
         grid-template-columns: 1fr;
         /* Full width cards */
-        gap: 20px;
+        gap: 16px;
     }
 
-    /* Navbar - Column Layout on Mobile */
+    /* Navbar - Compact */
     .navbar {
         height: auto;
-        padding: 12px 0;
-        position: relative;
-        /* Let it scroll or be sticky based on pref, sticking with sticky logic but adjusting content */
+        padding: 8px 0;
     }
 
     .nav-container {
         flex-direction: column;
         align-items: flex-start;
-        gap: 16px;
+        gap: 8px;
         padding: 0 16px;
     }
 
     .nav-menu {
         flex-direction: column;
-        align-items: stretch;
         width: 100%;
         gap: 4px;
-        /* Tight vertical stack */
     }
 
     .nav-link {
         display: block;
-        padding: 12px 16px;
+        padding: 10px 14px;
         background: #F9FAFB;
         border-radius: var(--radius-md);
         color: var(--text-main);
         font-weight: 500;
     }
 
-    .nav-link.active {
-        background: var(--primary-light);
-        color: var(--primary-dark);
-    }
-
     .nav-link.active::after {
         display: none;
     }
 
-    /* Profile moves to top right absolute or just part of flow? 
-       To keep it simple, let's put it at the top row or bottom */
     .nav-profile {
         width: 100%;
         justify-content: flex-start;
-        padding: 12px 16px;
+        padding: 8px 14px;
         background: #F0Fdf4;
-        /* Light tint */
-        margin-top: 8px;
+        margin-top: 4px;
     }
 
-    /* Mobile Typography */
+    /* Typography */
     .section-title {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
+        margin-bottom: 12px;
     }
 
     /* Card Adjustments */
     .card {
         box-shadow: var(--shadow-sm);
-        /* Lighter shadow on mobile */
+        margin: 0;
     }
 
     .card-img-wrapper {
-        padding-top: 50%;
-        /* Slightly shorter images on mobile to save space */
+        padding-top: 52%;
+        /* Slightly taller than 50% for better ratio */
     }
 
     .card-body {
@@ -584,9 +598,16 @@ section {
     .card-title {
         font-size: 1rem;
         min-height: auto;
-        /* Let it flow naturally */
-        -webkit-line-clamp: 3;
-        /* Allow 3 lines on mobile if needed */
+        -webkit-line-clamp: 2;
+        margin-bottom: 8px;
+    }
+
+    .card-action {
+        padding-top: 12px;
+    }
+
+    .btn {
+        padding: 10px 16px;
     }
 }
 
